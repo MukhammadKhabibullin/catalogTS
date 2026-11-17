@@ -390,7 +390,7 @@ export class BookScene {
       fovDegrees: this.camera.fov,
       viewportHeight: this.height,
       verticalOffsetPixels: this.verticalOffsetPixels,
-      safeInsetPixels: this.portrait ? 10 : 12,
+      safeInsetPixels: 8,
       horizontalHalfExtent: (PAGE_WIDTH * (this.portrait ? 1 : 2) + 0.55) / 2,
     });
     const tangent = Math.tan(THREE.MathUtils.degToRad(this.camera.fov / 2));

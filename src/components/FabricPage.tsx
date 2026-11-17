@@ -11,5 +11,5 @@ export function FabricPage({ fabric, index, loaded, onZoom }: { fabric: Fabric; 
 }
 
 export function FabricCaption({ fabric, onZoom }: { fabric: Fabric; onZoom: (fabric: Fabric) => void }) {
-  return <div className="fabric-caption"><div className="fabric-caption-text"><span className="fabric-caption-kicker">ТИХИЕ СТЕНЫ</span><h2 title={fabric.name}>{fabric.name}</h2></div><button onClick={(event) => { event.stopPropagation(); onZoom(fabric); }} aria-label={`Увеличить ${fabric.name}`} title={`Увеличить ${fabric.name}`} className="fabric-zoom"><Icon name="plus" size={13} /></button></div>;
+  return <div className="fabric-caption"><div className="fabric-caption-text"><h2 title={fabric.name}>{fabric.name}</h2></div><button onClick={(event) => { event.stopPropagation(); onZoom(fabric); }} aria-label={`Увеличить ${fabric.name}`} title={`Увеличить ${fabric.name}`} className="fabric-zoom"><Icon name="plus" size={13} /></button></div>;
 }

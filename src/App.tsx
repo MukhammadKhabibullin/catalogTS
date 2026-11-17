@@ -12,7 +12,7 @@ import { loadSnapshot, saveSnapshot } from './lib/storage';
 import { useAssetUrls } from './hooks/useAssetUrls';
 
 const CatalogManager = lazy(() => import('./components/CatalogManager').then((module) => ({ default: module.CatalogManager })));
-const defaultSettings: CatalogSettings = { cover: '', logo: '', contacts: { phone: '', email: '', address: '' } };
+const defaultSettings: CatalogSettings = { cover: '', logo: '/images/logo/logo-white.png', contacts: { phone: '', email: '', address: '' } };
 
 export default function App() {
   const [snapshot, setSnapshot] = useState<CatalogSnapshot>({ fabrics: baseFabrics as Fabric[], settings: defaultSettings, assets: [] });
@@ -39,7 +39,7 @@ export default function App() {
         fetch('/catalog/settings.json').then(async (response) => { if (!response.ok) throw new Error('Настройки каталога недоступны.'); return await response.json() as CatalogSettings; }),
       ]);
       if (!active) return;
-      if (saved.status === 'fulfilled' && saved.value) setSnapshot(saved.value);
+      if (saved.status === 'fulfilled' && saved.value) setSnapshot({ ...saved.value, settings: { ...defaultSettings, ...saved.value.settings, logo: saved.value.settings.logo || defaultSettings.logo, contacts: { ...defaultSettings.contacts, ...saved.value.settings.contacts } } });
       else if (settings.status === 'fulfilled') setSnapshot((old) => ({ ...old, settings: { ...defaultSettings, ...settings.value, contacts: { ...defaultSettings.contacts, ...settings.value.contacts } } }));
       if (saved.status === 'rejected') setNotice('Локальное хранилище недоступно. Сохраненные правки не загружены; показаны файлы проекта.');
       else if (settings.status === 'rejected') setNotice('Не удалось загрузить настройки проекта. Используются стандартные значения.');
@@ -100,7 +100,7 @@ export default function App() {
       <div className="catalog-toolbar">
         <button className="toolbar-collection" onClick={() => setDialog('collection')} disabled={!count}><Icon name="list" size={19} /><span>СОДЕРЖАНИЕ</span><span className="toolbar-count">{count}</span></button>
         <div className="pagination"><button className="page-arrow" aria-label="Предыдущая страница" disabled={closed || !ready || !count} onClick={() => bookRef.current?.previous()}><Icon name="left" size={19} /></button><div className="page-indicator" aria-live="polite"><span>{closed ? 'ОБЛОЖКА' : end ? 'КОНЕЦ' : `${firstNumber}${!portrait && firstNumber !== secondNumber ? ` — ${secondNumber}` : ''}`}</span><span className="page-indicator-divider" /><span className="page-total">{String(count).padStart(3, '0')}</span></div><button className="page-arrow" aria-label={closed ? 'Открыть каталог' : 'Следующая страница'} disabled={end || !ready || !count} onClick={() => bookRef.current?.next()}><Icon name="right" size={19} /></button></div>
-        <div className="toolbar-tools"><button className="icon-button" aria-label="Увеличить текущую ткань" title="Рассмотреть фактуру" disabled={closed || end || !count} onClick={() => setZoom(fabrics[current])}><Icon name="search" size={19} /></button><button className="icon-button" aria-label={expanded ? 'Выйти из полноэкранного режима' : 'Полноэкранный просмотр'} title="Полноэкранный просмотр" onClick={() => void toggleFullscreen()}><Icon name={expanded ? 'collapse' : 'expand'} size={19} /></button><span className="tool-separator" /><button className="icon-button" aria-label="Управление каталогом" title="Импорт файлов и настройки" disabled={!ready} onClick={() => { setManagerTab('fabrics'); setDialog('manager'); }}><Icon name="settings" size={19} /></button></div>
+        <div className="toolbar-tools"><button className="icon-button" aria-label={expanded ? 'Выйти из полноэкранного режима' : 'Полноэкранный просмотр'} title="Полноэкранный просмотр" onClick={() => void toggleFullscreen()}><Icon name={expanded ? 'collapse' : 'expand'} size={19} /></button><span className="tool-separator" /><button className="icon-button" aria-label="Управление каталогом" title="Импорт файлов и настройки" disabled={!ready} onClick={() => { setManagerTab('fabrics'); setDialog('manager'); }}><Icon name="settings" size={19} /></button></div>
       </div>
       <footer className="workspace-footer"><span>ТИХИЕ СТЕНЫ <span className="footer-dot">·</span> АРХИТЕКТУРА СТИЛЯ</span><span>{!snapshot.settings.cover ? <span title="Фото оригинальной обложки еще не предоставлено. Загрузите его в настройках.">ВРЕМЕННАЯ ОБЛОЖКА</span> : 'ЦИФРОВОЙ КАТАЛОГ'}</span></footer>
     </main>
